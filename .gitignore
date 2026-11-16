@@ -1,0 +1,25 @@
+# Python
+__pycache__/
+*.pyc
+*.egg-info/
+venv/
+.pytest_cache/
+.ruff_cache/
+
+# Secrets (the Roboflow API key lives only in an environment variable)
+.env
+
+# Ultralytics training output and the car's HUD recordings
+runs/
+recordings/
+
+# Original files kept only on this computer (photos, the bigger YOLOv8s model)
+_original/
+
+# Editor
+.vscode/
+
+# Local working notes (not part of the project)
+CLAUDE.md
+BITACORA.md
+GLOSSARY.md

@@ -1,0 +1,4 @@
+# Run the car's software on a PC (simulation with a webcam).
+# The Raspberry Pi uses requirements-pi.txt instead.
+ultralytics==8.4.215
+pygame-ce==2.5.8

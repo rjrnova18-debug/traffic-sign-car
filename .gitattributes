@@ -1,0 +1,10 @@
+# Store and check out every text file with LF line endings (the Linux/macOS style),
+# so Windows, the Raspberry Pi and the Linux CI runner see exactly the same bytes.
+* text=auto eol=lf
+
+# Binary files: never touch their bytes.
+*.pt binary
+*.png binary
+*.jpg binary
+*.gif binary
+*.mp4 binary

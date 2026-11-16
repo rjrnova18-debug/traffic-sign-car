@@ -1,0 +1,31 @@
+[build-system]
+requires = ["setuptools>=69"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "traffic-sign-car"
+version = "0.1.0"
+description = "A Raspberry Pi 5 car that sees traffic signs with YOLO11n and obeys them, with a gamepad for manual driving."
+requires-python = ">=3.11"  # Raspberry Pi OS Bookworm ships Python 3.11
+license = "AGPL-3.0-only"
+# Dependencies differ between the PC and the Pi, so they live in requirements*.txt.
+dependencies = []
+
+[project.scripts]
+signcar = "signcar.__main__:main"  # `pip install -e .` creates the `signcar` command
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+src = ["src", "tests"]
+extend-exclude = ["legacy"]  # the original scripts stay exactly as they were written
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]  # lets tests do `from signcar import signs` without installing

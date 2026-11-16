@@ -1,0 +1,4 @@
+# Raspberry Pi 5. picamera2, gpiozero and lgpio come from apt
+# (the venv is created with --system-site-packages), so they are not listed here.
+ultralytics==8.4.215
+pygame-ce==2.5.8

@@ -1,0 +1,4 @@
+# Tests and lint. The tests never load the real model, so they don't need ultralytics.
+pytest==9.2.0
+ruff==0.17.5
+gpiozero==2.0.1.post3
