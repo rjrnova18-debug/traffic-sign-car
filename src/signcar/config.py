@@ -30,3 +30,26 @@ class FilterConfig:
             raise ValueError("min_box_height must be in [0, 1]")
         if not 1 <= self.min_frames <= self.window_frames:
             raise ValueError("min_frames must be between 1 and window_frames")
+
+
+@dataclass(frozen=True)
+class AutopilotConfig:
+    """How fast the car drives in auto mode, and how long it obeys each sign.
+
+    Speeds are fractions of full power (the PWM duty cycle), from 0 to 1.
+    """
+
+    start_speed: float = 0.6  # before any speed limit sign is seen (tune on the car)
+    speed_40: float = 0.45  # after a "40" sign (tune on the car)
+    speed_80: float = 0.8  # after an "80" sign (tune on the car)
+    stop_hold_s: float = 5.0  # from the original car
+    stop_cooldown_s: float = 4.0  # time to drive past the stop sign without stopping again
+    crossing_speed: float = 0.4  # never faster than this near a crossing
+    crossing_hold_s: float = 3.0  # how long the slowdown lasts after the sign is last seen
+
+    def __post_init__(self) -> None:
+        speeds = (self.start_speed, self.speed_40, self.speed_80, self.crossing_speed)
+        if not all(0 <= speed <= 1 for speed in speeds):
+            raise ValueError("speeds must be between 0 and 1")
+        if min(self.stop_hold_s, self.stop_cooldown_s, self.crossing_hold_s) < 0:
+            raise ValueError("durations cannot be negative")
