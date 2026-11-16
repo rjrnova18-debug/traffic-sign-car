@@ -5,9 +5,9 @@
     gamepad / keyboard ──▶ ControlLoop (50 times a second) ◀────┘
                               mode ─▶ autopilot ─▶ fail-safe ─▶ motors
 
-Why two loops: the model needs ~150 ms per frame on the Pi 5, but the controls must
-answer within ~20 ms. The control loop never waits for the model: it uses the latest
-result, and the fail-safe stops auto mode if that result gets too old.
+Why two loops: the model needs 50-80 ms per frame on a laptop CPU (more on the Pi),
+but the controls must answer within ~20 ms. The control loop never waits for the model:
+it uses the latest result, and the fail-safe stops auto mode if that result gets too old.
 """
 
 import logging

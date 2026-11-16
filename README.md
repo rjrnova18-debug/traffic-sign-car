@@ -17,9 +17,11 @@ A wireless gamepad drives it by hand and switches between manual and autonomous 
 
 I built the car in May 2025, but the code that ran on the Pi was lost. This repo rebuilds it from what survived (the training script, the trained model and a motor test, all kept in [`legacy/`](legacy/)) and makes it sturdier: stronger filtering against false detections, fail-safe stops, a PC simulation, 167 tests and CI.
 
+> **Status:** the rebuilt software runs end to end with the trained model in the PC simulation. The speeds and the minimum sign size in [`config.py`](src/signcar/config.py) are starting values, to be tuned on the car.
+
 ## How it works
 
-Two loops run at different speeds. The model needs about 150 ms per frame on the Pi, but the gamepad must answer within 20 ms, so the control loop never waits for the model: it uses the latest result, and stops the car if that result gets too old.
+Two loops run at different speeds. The model needs 50–80 ms per frame on a laptop CPU (and more on the Pi), but the gamepad must answer within 20 ms, so the control loop never waits for the model: it uses the latest result, and stops the car if that result gets too old.
 
 ```mermaid
 flowchart LR
