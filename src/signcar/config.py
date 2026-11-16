@@ -53,3 +53,17 @@ class AutopilotConfig:
             raise ValueError("speeds must be between 0 and 1")
         if min(self.stop_hold_s, self.stop_cooldown_s, self.crossing_hold_s) < 0:
             raise ValueError("durations cannot be negative")
+
+
+@dataclass(frozen=True)
+class DrivingConfig:
+    """Limits for manual driving and for the fail-safe."""
+
+    max_manual_speed: float = 0.7  # full stick = 70 % duty, as in legacy/motor_trial.py
+    vision_timeout_s: float = 1.0  # auto mode stops if the latest vision result is older
+
+    def __post_init__(self) -> None:
+        if not 0 < self.max_manual_speed <= 1:
+            raise ValueError("max_manual_speed must be in (0, 1]")
+        if self.vision_timeout_s <= 0:
+            raise ValueError("vision_timeout_s must be positive")
