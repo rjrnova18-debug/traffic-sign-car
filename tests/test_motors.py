@@ -6,7 +6,7 @@ from gpiozero.pins.mock import MockFactory, MockPWMPin
 
 from signcar.config import MotorConfig
 from signcar.driving import STOPPED, DriveCommand
-from signcar.motors import SimulatedMotors, Tb6612Motors
+from signcar.motors import MOTOR_TEST_STEPS, SimulatedMotors, Tb6612Motors, run_motor_test
 
 # The pins of legacy/motor_trial.py.
 LEFT_FORWARD, LEFT_BACKWARD, LEFT_SPEED = 17, 18, 22
@@ -80,4 +80,22 @@ def test_simulated_motors_remember_the_last_command():
     motors.drive(DriveCommand(0.5, 0.2))
     assert motors.command == DriveCommand(0.5, 0.2)
     motors.close()
+    assert motors.command == STOPPED
+
+
+def test_the_motor_test_runs_every_step_and_ends_stopped():
+    class RecordingMotors(SimulatedMotors):
+        def __init__(self):
+            super().__init__()
+            self.history = []
+
+        def drive(self, command):
+            super().drive(command)
+            self.history.append(command)
+
+    motors, said = RecordingMotors(), []
+    run_motor_test(motors, sleep=lambda seconds: None, say=said.append)
+
+    assert said[0] == "left side forward"
+    assert motors.history == [command for _, command in MOTOR_TEST_STEPS]
     assert motors.command == STOPPED

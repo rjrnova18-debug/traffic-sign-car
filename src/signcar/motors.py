@@ -11,6 +11,8 @@ Raspberry Pi 5, whose pins are run by a new chip (the RP1). gpiozero is imported
 only when the real motors are created, so a PC without it can still simulate.
 """
 
+import time
+from collections.abc import Callable
 from typing import Any, Protocol
 
 from signcar.config import MotorConfig, MotorPins
@@ -99,3 +101,32 @@ class SimulatedMotors:
 
     def close(self) -> None:
         self.stop()
+
+
+# Each side alone, both directions, then both together. Slow, and with pauses.
+MOTOR_TEST_STEPS = [
+    ("left side forward", DriveCommand(0.4, 0.0)),
+    ("left side backward", DriveCommand(-0.4, 0.0)),
+    ("right side forward", DriveCommand(0.0, 0.4)),
+    ("right side backward", DriveCommand(0.0, -0.4)),
+    ("both sides forward", DriveCommand(0.4, 0.4)),
+    ("spin right (left forward, right backward)", DriveCommand(0.4, -0.4)),
+]
+
+
+def run_motor_test(
+    motors: Motors,
+    step_s: float = 1.5,
+    sleep: Callable[[float], None] = time.sleep,
+    say: Callable[[str], None] = print,
+) -> None:
+    """Spin each side both ways, one step at a time. Run it with the wheels in the air.
+
+    If a side turns the wrong way, swap its `forward` and `backward` pins in MotorConfig.
+    """
+    for description, command in MOTOR_TEST_STEPS:
+        say(description)
+        motors.drive(command)
+        sleep(step_s)
+        motors.stop()
+        sleep(0.5)
