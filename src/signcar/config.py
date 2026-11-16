@@ -67,3 +67,26 @@ class DrivingConfig:
             raise ValueError("max_manual_speed must be in (0, 1]")
         if self.vision_timeout_s <= 0:
             raise ValueError("vision_timeout_s must be positive")
+
+
+@dataclass(frozen=True)
+class MotorPins:
+    """BCM numbers of the three pins of one TB6612FNG channel (one side of the car)."""
+
+    forward: int  # HIGH (with `backward` LOW) turns the wheels forward
+    backward: int  # HIGH (with `forward` LOW) turns them backward
+    speed: int  # the PWM input: its duty cycle sets the speed
+
+
+@dataclass(frozen=True)
+class MotorConfig:
+    """How the TB6612FNG is wired to the Pi. The pins come from legacy/motor_trial.py."""
+
+    # Channel A (IN1, IN2 and ENA in motor_trial.py) drives the left wheels.
+    left: MotorPins = MotorPins(forward=17, backward=18, speed=22)
+    # Channel B (IN3, IN4, ENB) drives the right wheels. On the car the right side goes
+    # forward when IN4 (GPIO 24) is HIGH, the opposite of the left side, so the two
+    # direction pins are swapped here, exactly as forward() does in motor_trial.py.
+    right: MotorPins = MotorPins(forward=24, backward=23, speed=25)
+    standby_pin: int | None = None  # STBY; None = wired straight to 3.3 V (check on the car)
+    pwm_frequency_hz: int = 100  # as in motor_trial.py
