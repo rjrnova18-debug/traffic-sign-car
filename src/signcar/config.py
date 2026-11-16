@@ -90,3 +90,24 @@ class MotorConfig:
     right: MotorPins = MotorPins(forward=24, backward=23, speed=25)
     standby_pin: int | None = None  # STBY; None = wired straight to 3.3 V (check on the car)
     pwm_frequency_hz: int = 100  # as in motor_trial.py
+
+
+@dataclass(frozen=True)
+class GamepadConfig:
+    """Which stick and buttons do what.
+
+    The numbers change from one gamepad to another: run `signcar --probe-gamepad`
+    and move each stick and press each button to find yours.
+    """
+
+    throttle_axis: int = 1  # left stick, up and down
+    steering_axis: int = 0  # left stick, left and right
+    invert_throttle: bool = True  # most gamepads report "stick up" as a negative value
+    deadzone: float = 0.15  # a stick closer to the center than this counts as centered
+    toggle_mode_button: int = 0
+    emergency_stop_button: int = 1
+    quit_button: int = 9  # "Start" on many generic gamepads
+
+    def __post_init__(self) -> None:
+        if not 0 <= self.deadzone < 1:
+            raise ValueError("deadzone must be in [0, 1)")
