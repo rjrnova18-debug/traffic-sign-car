@@ -1,0 +1,39 @@
+# CI = Continuous Integration: every push is checked automatically on a clean machine.
+
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  lint-and-test:
+    runs-on: ubuntu-latest
+
+    # A matrix runs the same job once per value, in parallel:
+    # 3.11 is the Python of Raspberry Pi OS (where the car runs), 3.12 the one on the PC.
+    strategy:
+      matrix:
+        python-version: ["3.11", "3.12"]
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-python@v7
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      # Only the light tools: the tests never load the real model,
+      # so the ~2 GB of ultralytics + PyTorch are not installed here.
+      - name: Install dependencies
+        run: pip install -r requirements-dev.txt
+
+      - name: Lint
+        run: ruff check .
+
+      - name: Check formatting
+        run: ruff format --check .
+
+      - name: Test
+        run: pytest
