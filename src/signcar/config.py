@@ -74,12 +74,15 @@ class DrivingConfig:
 
     max_manual_speed: float = 0.7  # full stick = 70 % duty, as in legacy/motor_trial.py
     vision_timeout_s: float = 1.0  # auto mode stops if the latest vision result is older
+    control_rate_hz: int = 50  # decisions per second: the controls answer within 20 ms
 
     def __post_init__(self) -> None:
         if not 0 < self.max_manual_speed <= 1:
             raise ValueError("max_manual_speed must be in (0, 1]")
         if self.vision_timeout_s <= 0:
             raise ValueError("vision_timeout_s must be positive")
+        if self.control_rate_hz <= 0:
+            raise ValueError("control_rate_hz must be positive")
 
 
 @dataclass(frozen=True)
@@ -124,3 +127,15 @@ class GamepadConfig:
     def __post_init__(self) -> None:
         if not 0 <= self.deadzone < 1:
             raise ValueError("deadzone must be in [0, 1)")
+
+
+@dataclass(frozen=True)
+class Config:
+    """All the settings, grouped by the part of the car that uses them."""
+
+    vision: VisionConfig = VisionConfig()
+    sign_filter: FilterConfig = FilterConfig()
+    autopilot: AutopilotConfig = AutopilotConfig()
+    driving: DrivingConfig = DrivingConfig()
+    motors: MotorConfig = MotorConfig()
+    gamepad: GamepadConfig = GamepadConfig()

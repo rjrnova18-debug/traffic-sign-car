@@ -143,6 +143,7 @@ class HudWindow:
         self._record_path = record_path
         self._fps = fps
         self._writer = None  # created with the first frame, when its size is known
+        self._video_size = (0, 0)  # (width, height) of the recording
 
     def show(self, canvas: Frame | None) -> int:
         if canvas is not None:
@@ -159,13 +160,18 @@ class HudWindow:
             cv2.destroyWindow(self._title)
 
     def _record(self, canvas: Frame) -> None:
+        height, width = canvas.shape[:2]
         if self._writer is None:
             self._record_path.parent.mkdir(parents=True, exist_ok=True)
-            height, width = canvas.shape[:2]
+            self._video_size = (width, height)
             fourcc = cv2.VideoWriter_fourcc(*"mp4v")
             self._writer = cv2.VideoWriter(
                 str(self._record_path), fourcc, self._fps, (width, height)
             )
+        # A video file has one size. Frames of another size (the black frame shown before
+        # the camera starts, or a camera that ignored the requested resolution) are scaled.
+        if (width, height) != self._video_size:
+            canvas = cv2.resize(canvas, self._video_size)
         self._writer.write(canvas)
 
 

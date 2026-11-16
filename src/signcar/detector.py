@@ -48,11 +48,15 @@ def to_detections(
 
 class SignDetector:
     def __init__(self, model_path: Path, image_size: int) -> None:
+        import numpy as np
         from ultralytics import YOLO
 
         self._model = YOLO(str(model_path))
         self._image_size = image_size
         check_class_names(self._model.names)
+        # The first prediction takes seconds (PyTorch sets itself up on first use).
+        # Doing it now, on a black frame, keeps that delay out of the driving loop.
+        self.detect(np.zeros((image_size, image_size, 3), dtype=np.uint8))
 
     def detect(self, frame: Frame) -> list[Detection]:
         """Every sign the model sees in one frame, trusted or not."""

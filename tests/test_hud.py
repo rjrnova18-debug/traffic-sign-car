@@ -1,5 +1,6 @@
 """The HUD drawing, checked pixel by pixel on a black frame."""
 
+import cv2
 import numpy as np
 import pytest
 
@@ -76,6 +77,19 @@ def test_the_window_records_frames_to_a_video(tmp_path, frame):
         assert window.show(frame) == -1  # no window, so no key
     window.close()
     assert video.stat().st_size > 0
+
+
+def test_frames_of_another_size_are_scaled_into_the_recording(tmp_path):
+    video = tmp_path / "run.mp4"
+    window = HudWindow("test", show=False, record_path=video, fps=10)
+    window.show(blank_frame(640, 480))
+    window.show(blank_frame(647, 511))  # e.g. the first camera frame after the black one
+    window.close()
+
+    capture = cv2.VideoCapture(str(video))
+    frames = int(capture.get(cv2.CAP_PROP_FRAME_COUNT))
+    capture.release()
+    assert frames == 2
 
 
 def test_a_hidden_window_without_recording_does_nothing(frame):
