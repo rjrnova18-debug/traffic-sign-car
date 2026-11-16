@@ -26,8 +26,9 @@ jobs:
 
       # Only the light tools: the tests never load the real model,
       # so the ~2 GB of ultralytics + PyTorch are not installed here.
+      # OpenCV is the "headless" build: the same library without windows, for servers.
       - name: Install dependencies
-        run: pip install -r requirements-dev.txt
+        run: pip install -r requirements-dev.txt opencv-python-headless==5.0.0.93
 
       - name: Lint
         run: ruff check .

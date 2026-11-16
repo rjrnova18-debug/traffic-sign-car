@@ -8,6 +8,19 @@ This module imports nothing from the package, so every other module can import i
 """
 
 from dataclasses import dataclass
+from pathlib import Path
+
+PROJECT_ROOT = Path(__file__).resolve().parents[2]  # src/signcar/config.py -> the repo
+
+
+@dataclass(frozen=True)
+class VisionConfig:
+    """The camera and the model."""
+
+    model_path: Path = PROJECT_ROOT / "models" / "traffic_signs_yolo11n.pt"
+    image_size: int = 640  # the size the model was trained with
+    frame_width: int = 640
+    frame_height: int = 480
 
 
 @dataclass(frozen=True)
